@@ -43,7 +43,9 @@ jobs:
           command: docker build -t meesum3595/devsecops-app .
       - run:
           name: Debug Docker Login
-          command: echo "Username: $DOCKERHUB_USERNAME" && echo "Password Length: ${#DOCKERHUB_PASSWORD}"
+          command: |
+            echo "Username: $DOCKERHUB_USERNAME"
+            echo "Password Length: ${#DOCKERHUB_PASSWORD}"
       - run:
           name: Log in to Docker Hub
           command: echo "$DOCKERHUB_PASSWORD" | docker login -u "$DOCKERHUB_USERNAME" --password-stdin
