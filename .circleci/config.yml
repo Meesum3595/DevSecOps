@@ -1,0 +1,46 @@
+version: 2.1
+
+orbs:
+  python: circleci/python@2
+
+executors:
+  docker-executor:
+    docker:
+      - image: circleci/python:3.9
+
+jobs:
+  test-python:
+    docker:
+      - image: cimg/python:3.8-node
+    steps:
+      - checkout
+      - python/install-packages
+      - run:
+          name: Run tests
+          command: pytest --junitxml=junit.xml || ((($? == 5)) && echo 'Did not find any tests to run.')
+      - store_test_results:
+          path: junit.xml
+
+  build-and-push-docker:
+    docker:
+      - image: cimg/python:3.9
+    steps:
+      - checkout
+      - setup_remote_docker
+      - run:
+          name: Build Docker Image
+          command: docker build -t meesum3595/devsecops-app .
+      - run:
+          name: Log in to Docker Hub
+          command: echo "$DOCKERHUB_PASSWORD" | docker login -u "Meesum3595" --password-stdin
+      - run:
+          name: Push Docker Image
+          command: docker push meesum3595/devsecops-app
+
+workflows:
+  build-test-deploy:
+    jobs:
+      - test-python
+      - build-and-push-docker:
+          requires:
+            - test-python
