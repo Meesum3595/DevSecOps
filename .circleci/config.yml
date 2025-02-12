@@ -31,13 +31,7 @@ jobs:
       - image: cimg/python:3.9
     steps:
       - checkout
-      - setup_remote_docker:
-          version: 20.10.7
-      - run:
-          name: Install Docker
-          command: |
-            sudo apt update
-            sudo apt install -y docker.io
+      - setup_remote_docker  # ❌ Removed "version" field
       - run:
           name: Build Docker Image
           command: docker build -t meesum3595/devsecops-app .
